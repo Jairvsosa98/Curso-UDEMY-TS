@@ -16,7 +16,10 @@ function App() {
           <PatientList />
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer
+        autoClose={2000}
+        pauseOnFocusLoss={false}
+      />
     </>
   )
 }

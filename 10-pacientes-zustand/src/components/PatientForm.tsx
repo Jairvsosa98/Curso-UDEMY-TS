@@ -2,14 +2,28 @@ import { useForm, type FieldErrors, type FieldValues } from "react-hook-form";
 import { toast } from "react-toastify";
 import type { DraftPatient } from "../types";
 import { usePatientStore } from "../stores/store";
+import { useEffect } from "react";
 
 export default function PatientForm() {
-  const { addPatient, activeId } = usePatientStore();
-  const { register, handleSubmit, reset } = useForm<DraftPatient>({
+  const { addPatient, updatePatient, activeId, patients } = usePatientStore();
+  const { register, handleSubmit, reset, setValue } = useForm<DraftPatient>({
     mode: "onSubmit",
     reValidateMode: "onChange",
     criteriaMode: "all",
   });
+
+  useEffect(() => {
+    if (activeId) {
+      const activePatient = patients.filter(patient => patient.id === activeId)[0]
+
+      setValue('name', activePatient.name)
+      setValue('caretaker', activePatient.caretaker)
+      setValue('date', activePatient.date)
+      setValue('email', activePatient.email)
+      setValue('symptoms', activePatient.symptoms)
+
+    }
+  }, [activeId])
 
   const onInvalid = (formErrors: FieldErrors<FieldValues>) => {
     Object.entries(formErrors).forEach(([field, err]) => {
@@ -31,9 +45,15 @@ export default function PatientForm() {
   };
 
   const registerPatient = (data: DraftPatient) => {
-    addPatient(data);
+    if (activeId) {
+      updatePatient(data);
+    } else {
+      addPatient(data);
+    }
+
     reset();
   };
+
 
   return (
     <div className="md:w-1/2 lg:w-2/5 mx-5">
@@ -42,8 +62,8 @@ export default function PatientForm() {
       </h2>
 
       <p className="text-lg mt-5 text-center mb-10">
-        Añade Pacientes y {""}
-        <span className="text-indigo-600 font-bold">Administralos</span>
+        {activeId ? 'Actualiza Pacientes' : 'Añade Pacientes'} y {""}
+        <span className={`${activeId ? 'text-emerald-600' : 'text-indigo-600'} font-bold`}>Administralos</span>
       </p>
 
       <form
@@ -130,8 +150,8 @@ export default function PatientForm() {
 
         <input
           type="submit"
-          className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors"
-          value="Guardar Paciente"
+          className={`${activeId ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700'} w-full p-3 text-white uppercase font-bold  cursor-pointer transition-colors`}
+          value={activeId ? 'Actualizar Paciente' : 'Guardar Paciente'}
         />
       </form>
     </div>
