@@ -59,8 +59,8 @@ export default function useWeather() {
         setWeather(initialState)
         try {
             const apiKey = import.meta.env.VITE_API_WEATHER_KEY
-
-            const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${search.city},${search.country}&appid=${apiKey}`
+            const baseUrl = import.meta.env.VITE_API_URL_BASE
+            const geoUrl = `${baseUrl}/geo/1.0/direct?q=${search.city},${search.country}&appid=${apiKey}`
 
             const { data } = await axios(geoUrl)
             if (!data[0]) toast.warning('Clima no encontrado');
@@ -68,7 +68,7 @@ export default function useWeather() {
             const lat = data[0].lat
             const lon = data[0].lon
 
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
+            const weatherUrl = `${baseUrl}/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
 
             // const { data: weather } = await axios<WeatherResponse>(weatherUrl)
             // console.log(weather.temp)
